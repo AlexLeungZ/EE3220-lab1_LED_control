@@ -1,0 +1,47 @@
+#include "mbed.h"
+
+#define BLINKING_RATE 1000ms // Blinking rate in milliseconds
+#define DEBOUNCE_DELAY 400ms // Button debounce delay
+#define PRESSES_TO_BLINK 3 // Button debounce delay
+
+// main() runs in its own thread in the OS
+int main()
+{
+    // Initialise the digital pins
+    DigitalOut led(LED1); // LED1 set as an output
+    DigitalIn button(BUTTON1); // BUTTON1 set as an input
+
+    int pressed; // variable declaration
+
+    pressed = 0;
+    led = 0;
+
+    printf("Press the button %d times to blink the LED !!!\r\n", PRESSES_TO_BLINK);
+
+    while (true) {
+
+        // Detect a button press
+        while(button.read())
+            ;
+
+        ThisThread::sleep_for(DEBOUNCE_DELAY);
+        pressed +=1 ;
+
+        // Check if to blink
+        if(pressed >= PRESSES_TO_BLINK){
+            printf("LED will blink %d times !!\r\n", PRESSES_TO_BLINK);
+            
+            // blink LED if the required presses done
+            while (pressed) {
+                led = 1 ;
+                ThisThread::sleep_for(BLINKING_RATE);
+                led = 0 ;
+                ThisThread::sleep_for(BLINKING_RATE);
+                pressed -=1 ;
+            }
+
+            printf("Press the button %d times to blink the LED !!!\r\n", PRESSES_TO_BLINK);
+        }
+    }
+}
+
